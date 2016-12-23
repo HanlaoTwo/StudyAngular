@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.static.runoob.com/libs/angular.js/1.4.6/angular.min.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--需要引入的文件-->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<!--当输入有错误的时候会提示-->
+<style type="text/css">
+    .css-form input.ng-invalid.ng-touched {
+        border-color: #FF2F2F;
+        color: red;
+    }
+
+    .css-form input.ng-valid.ng-touched {
+        border-color: #78FA89;
+    }
+</style>
+
+<div style="margin:100px auto;width: 700px;">
+
+    <div ng-app="formExample" ng-controller="ExampleController">
+
+        <form name="form" class="css-form" novalidate>
+            <label>Name:<input type="text" ng-model="user.name" name="uName" required=""/></label>
+            <label>E-mail:<input id="uemail" type="text" placeholder="点击后不输入会变色，并有提示" ng-model="user.email" name="uEmail"
+                                 required=""/>
+                    <label ng-show="form.uEmail.$touched&&form.uEmail.$error.required">
+                    <span ng-show="form.uEmail.$error.required"
+                          id="mybutton"
+                          style="margin-left: -20px"
+                          data-toggle="popover"
+                          data-placement="bottom"
+                          data-viewport=""
+                          data-template=
+                                  '<div class="popover" role="tooltip">
+                                       <div class="arrow"></div>
+                                       <h5 class="popover-title"></h5>
+                                       <div class="popover-content" style="height:20px;color: red;padding-top: 0;"></div>
+                                   </div>'
+                          data-content="输入错误"></span>
+                    </label>
+
+            </label>
+
+            <p> bootstreep 提供的工具提示
+            <p> 使用ng-show控制提示出现的条件，
+            <p> ng-show="form.uEmail.$touched&&form.uEmail.$error.required"
+            <p> 当输入有错误的时候会弹出来，“form”是表单的名字；“uEmail”输入项的名字，这里是在输入框被点击且必填未填时显示
+            <p> 一些属性如下：
+            <p> id="mybutton"-----------------。。。。
+            <p> style="margin-left: -20px"----设置显示在旁边输入框的里面，因为是为e-mail做错误提示
+            <p> data-toggle="popover"---------设置提示类型，还有tooltip可选，不过不适合做错误提示
+            <p> data-placement="bottom"-------设置出现位置
+            <p> data-viewport=""---------------。。。。说不出口
+            <p> data-template= ---------------显示提示的样式，可以不写使用默认
+
+            <p>'<div class="popover" role="tooltip">
+            <p> <div class="arrow"></div>
+            <p> <h5 class="popover-title"></h5>
+            <p> <div class="popover-content" style="height:20px;color: red;padding-top: 0;"></div>
+            <p> </div>'
+            <p> data-content------------------提示内容
+            <p>show 和hide可以控制提示的显示和隐藏，默认显示要可以在js中写上“ $('#mybutton').popover("show");”</p>
+            <button onclick="show()">show</button>
+            <button onclick="hide()">hide</button>
+
+            <p> 忽略以下内容
+            <pre>user = {{user | json}}</pre>
+            <pre>master = {{master | json}}</pre>
+
+
+            angularUI提供的工具提示 需要在angualr的controller中引入ui.bootstrap：angular.module('myModule', ['ui.bootstrap']);
+            参考api:  https://angular-ui.github.io/bootstrap/#/getting_started
+            <input type="text" value="Click me!"
+                   uib-popover="I appeared on focus! Click away and I'll vanish..."
+                   popover-trigger='focus' class="form-control">
+            <button uib-popover="I appeared on mouse enter!" uib-popover-trigger="'mouseenter'"
+                    popover-is-open="true" type="button" class="btn btn-default">Mouseenter
+            </button>
+
+
+        </form>
+
+    </div>
+
+
+</div>
+<script>
+
+    $('#mybutton').popover("show");
+
+    function show() {
+        $('#mybutton').popover("show");
+    }
+    function hide() {
+        $('#mybutton').popover("hide");
+    }
+
+
+    angular.module('formExample', [])
+            .controller('ExampleController', ['$scope', function ($scope) {
+                $scope.master = {};
+                $scope.update = function (user) {
+                    $scope.master = angular.copy(user);
+                };
+                $scope.reset = function (form) {
+                    if (form) {
+                        form.$setPristine();
+                        form.$setUntouched();
+                    }
+                    $scope.user = angular.copy($scope.master);
+                };
+                $scope.reset();
+            }]);
+</script>
+
+</body>
