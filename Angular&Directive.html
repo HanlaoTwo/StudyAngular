@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.static.runoob.com/libs/angular.js/1.4.6/angular.min.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--需要引入的文件-->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="bootstrap-datetimepicker.min.css">
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="bootstrap-datetimepicker.min.js"></script>
+</head>
+
+
+<body ng-app="myReverseFilterApp" style="width: 750px;margin: 0px">
+
+<div ng-controller="MyController">
+    <input ng-model="greeting" type="text"><br>
+    No filter: {{greeting}}<br>
+    Reverse: {{greeting|reverse}}<br>
+    Reverse + uppercase: {{greeting|reverse:true}}<br>
+    Reverse, filtered in controller: {{filteredGreeting}}<br>
+    test: {{greeting|test}}
+    <hr/>
+    <hr/>
+</div>
+
+<div ng-controller="DController">
+
+    Date format: <input ng-model="format"><hr/>
+    Current time is: <span my-current-time="format"></span><hr/>
+
+    <datapicker myvalue="times" ng-model="times" format="yyyy-mm-dd hh:mm:ss" on-closed="updateValue()"></datapicker>
+    <br>controller--date&&time:  {{times}}
+
+</div>
+
+
+</body>
+
+
+<script>
+    var app = angular.module('myReverseFilterApp', []);
+
+
+    //-----------------------------指令----------------------------
+
+    app.directive('myCurrentTime', ['$interval', 'dateFilter', function ($interval, dateFilter) {
+
+        function link(scope, element, attrs) {
+            var format, timeoutId;
+
+            function updateTime() {
+                element.text(dateFilter(new Date(), format));
+            }
+
+            // watch 监控formate的变化
+            scope.$watch(attrs.myCurrentTime, function (value) {
+                format = value;
+                updateTime();
+            });
+
+            //when an AngularJS scope is destroyed, it broadcasts a $destroy event to listening scopes.
+            element.on('$destroy', function () {
+                $interval.cancel(timeoutId);
+            });
+
+            // start the UI update process; save the timeoutId for canceling
+            // $interval处理间歇性工作
+            timeoutId = $interval(function () {
+                updateTime(); // update DOM
+            }, 1000);
+        }
+
+        return {
+            link: link
+        };
+    }]);
+    app.controller('DController', ['$scope', function ($scope) {
+        $scope.format = 'M/d/yy h:mm:ss a';
+        $scope.times = "0";
+        $scope.updateValue = function () {
+            console.log("===="+$scope.times);
+        }
+
+    }]);
+    app.directive('datapicker', ['$interval', 'dateFilter', function ($interval, dateFilter) {
+        function link(scope, element, attrs) {
+            function intMyselef() {
+                console.log(attrs.format);
+                $('#datetimepicker').datetimepicker({
+                    format: attrs.format,
+                }).on('changeDate', function(ev){
+                    //ev.date 是实际的时间，时间格式化后赋值给输入框
+                    scope.datetime = dateFilter(ev.date,"yyyy-MM-dd hh:mm:ss");
+                });
+            };
+            intMyselef();
+            scope.$watch('datetime', function (newval,oldval) {
+                scope.datetime = newval;
+            });
+        }
+        return {
+            restrict: 'E',
+            transclude: true,
+            template: '<div>' +
+                            '控件----<input type="text" value="" id="datetimepicker" ng-model="datetime"><br><br>' +
+                            '<br><br>dretive--date&&time:{{datetime}}' +
+                      '</div>',
+            link: link,
+            scope: {
+                datetime: '=myvalue'
+            }
+        };
+    }]);
+
+
+    //-------------------------------过滤器-------------------------------
+    app.controller('MyController', ['$scope', 'reverseFilter', function ($scope, reverseFilter) {
+        $scope.greeting = 'hello';
+        $scope.filteredGreeting = reverseFilter($scope.greeting);
+    }]);
+    app.filter('reverse', function () {
+        return function (input, uppercase) {
+            input = input || '';
+            var out = '';
+            for (var i = 0; i < input.length; i++) {
+                out = input.charAt(i) + out;
+            }
+            // conditional based on optional argument
+            if (uppercase) {
+                out = out.toUpperCase();
+            }
+            return out;
+        };
+    });
+    app.filter('test', function () {
+        return function (input) {
+            var out;
+            if (input.length > 15) {
+                out = input.substr(0, 13) + "..."
+            }
+            else out = input;
+
+            return out;
+        };
+    });
+
+</script>
+
+
+
+
+
