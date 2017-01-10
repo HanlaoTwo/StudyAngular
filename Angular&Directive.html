@@ -37,7 +37,7 @@
     Date format: <input ng-model="format"><hr/>
     Current time is: <span my-current-time="format"></span><hr/>
 
-    <datapicker ng-model="times" format="yyyy-mm-dd"></datapicker>
+    <datapicker ng-model="times" format="yyyy-mm-dd hh:mm"></datapicker>
     <br>控制器时间:  {{times}}
 
 </div>
@@ -109,12 +109,12 @@
                     language: "Ch",
                     weekStart: 1,
                     language: "Ch",
-                    minView: "month",
+                    //minView: "month",
                     todayBtn: true,
                     clearBtn: true,
                     autoclose: true
                 }).on('changeDate', function(ev){
-                    scope.datetime = dateFilter(Date.parse(ev.date),'yyyy-MM-dd');
+                    scope.datetime = dateFilter(Date.parse(ev.date),'yyyy-MM-dd HH:mm');
                     //scope.datetime = ev.date;
                 });
             };
@@ -128,10 +128,7 @@
             //使用方法
             restrict: 'E',
             transclude: true,
-            template: '<div>' +
-                            '<input type="text" value="" id="datetimepicker" ng-model="datetime"><br><br>' +
-                            '<br><br>指令时间:{{datetime}}' +
-                      '</div>',
+            template: '<input type="text" value="" id="datetimepicker" ng-model="datetime">指令时间:{{datetime}}',
             link: link,
             scope: {
                 datetime: '=ngModel'
