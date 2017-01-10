@@ -8,9 +8,9 @@
     <!--需要引入的文件-->
     <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="bootstrap-datetimepicker.min.css">
     <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
     <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="bootstrap-datetimepicker.min.css">
     <script src="bootstrap-datetimepicker.min.js"></script>
 </head>
 
@@ -37,14 +37,13 @@
     Date format: <input ng-model="format"><hr/>
     Current time is: <span my-current-time="format"></span><hr/>
 
-    <datapicker myvalue="times" ng-model="times" format="yyyy-mm-dd hh:ii:ss" on-closed="updateValue()"></datapicker>
+    <datapicker ng-model="times" format="yyyy-mm-dd"></datapicker>
     <br>控制器时间:  {{times}}
 
 </div>
 
 
 </body>
-
 
 <script>
     var app = angular.module('myReverseFilterApp', []);
@@ -85,7 +84,7 @@
 
 
     app.controller('DController', ['$scope', function ($scope) {
-        $scope.times = '2017-01-12 12:12';//定义外边的时间
+        $scope.times = '';//定义外边的时间
         $scope.format = 'MM/dd/yyyy hh:mm:ss';
         $scope.updateValue = function () {
             console.log("===="+$scope.times);
@@ -95,10 +94,27 @@
         function link(scope, element, attrs) {
             function intMyselef() {
                 console.log(attrs.format);
+                $.fn.datetimepicker.dates['Ch'] = {
+                    days: ["周日", "周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+                    daysShort: ["日", "一", "二", "三", "四", "五", "六", "日"],
+                    daysMin: ["日", "一", "二", "三", "四", "五", "六", "日"],
+                    months: ["1月","2月","3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+                    monthsShort: ["一","二","三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],
+                    meridiem:    ['上午', '下午'],
+                    clear: "清除",
+                    today: "现在"
+                };
                 $('#datetimepicker').datetimepicker({
                     format: attrs.format,
+                    language: "Ch",
+                    weekStart: 1,
+                    language: "Ch",
+                    minView: "month",
+                    todayBtn: true,
+                    clearBtn: true,
+                    autoclose: true
                 }).on('changeDate', function(ev){
-                    scope.datetime = dateFilter(Date.parse(ev.date),'yyyy-MM-dd HH:mm:ss');
+                    scope.datetime = dateFilter(Date.parse(ev.date),'yyyy-MM-dd');
                     //scope.datetime = ev.date;
                 });
             };
@@ -118,7 +134,7 @@
                       '</div>',
             link: link,
             scope: {
-                datetime: '=myvalue'
+                datetime: '=ngModel'
             }
         };
     }]);
