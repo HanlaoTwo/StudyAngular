@@ -19,9 +19,9 @@
 此div中的控制器MyController
 <div ng-controller="MyController">
     <input ng-model="greeting" type="text"><br>
-   <!-- angualr过滤器的使用方法【{{value|filter}}】,值或者能表示一个值得变量加一个管道符“|”，后面接上filter的名字
-    这里的过滤器reverse是angualr中提供的实例，test是自己编写的filter。
-    reverse将字母倒置，test在输入长度超过13时显示...-->
+    <!-- angualr过滤器的使用方法【{{value|filter}}】,值或者能表示一个值得变量加一个管道符“|”，后面接上filter的名字
+     这里的过滤器reverse是angualr中提供的实例，test是自己编写的filter。
+     reverse将字母倒置，test在输入长度超过13时显示...-->
 
     没有过滤器: {{greeting}}<br>
     Reverse过滤器: {{greeting|reverse}}<br>
@@ -34,11 +34,17 @@
 此div中的控制器DController
 <div ng-controller="DController">
 
-    Date format: <input ng-model="format"><hr/>
-    Current time is: <span my-current-time="format"></span><hr/>
+    Date format: <input ng-model="format">
+    <hr/>
+    Current time is:<!-- <span my-current-time="format"></span>-->
+    <hr/>
 
-    <datapicker ng-model="times" format="yyyy/MM/dd" language="Ch"  minView="month" style="width: 200px"></datapicker>
-    <br>控制器时间:  {{times}}
+    <datapicker ng-model="times"
+                format="yyyy-mm-dd hh:ii"
+                language="Ch"
+                style="width: 200px">
+    </datapicker>
+    <br>控制器时间: {{times}}
 
 </div>
 
@@ -84,15 +90,15 @@
 
 
     app.controller('DController', ['$scope', function ($scope) {
-        $scope.times = '';//定义外边的时间
+        $scope.times = '2012-12-12 12:12:12';//定义外边的时间
         $scope.format = 'MM/dd/yyyy hh:mm:ss';
         $scope.updateValue = function () {
-            console.log("===="+$scope.times);
+            console.log("====" + $scope.times);
         }
     }]);
 
     /**
-     * 默认值：
+     * 默认值
      * format：yyyy-MM-dd HH:mm:ss
      * language:Ch(中文)
      * weekStart:7（周日）
@@ -103,7 +109,7 @@
      */
     app.directive('datapicker', ['dateFilter', function (dateFilter) {
 
-        function link(scope, attrs) {
+        function link(scope, element, attrs) {
 
                 $.fn.datetimepicker.dates['Ch'] = {
 
@@ -114,15 +120,14 @@
                     monthsShort: ["一","二","三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],
                     meridiem:    ['上午', '下午'],
                     clear: "清除",
-                    today: "现在"
-
+                    today: "今天"
                 };
 
                 $('#datetimepicker').datetimepicker({
 
                     format: attrs.format,
                     weekStart: attrs.weekStart==undefined?"7":attrs.weekStart,
-                    language: attrs.language==undefined?"en":attrs.language,
+                    language: attrs.language==undefined?"Ch":attrs.language,
                     minView: attrs.minview==undefined?"hour":attrs.minview,
                     todayBtn: attrs.todaybtn==undefined?true:attrs.todaybtn,
                     clearBtn: attrs.clearbtn==undefined?false:attrs.clearbtn,
@@ -130,29 +135,25 @@
 
                 }).on('changeDate', function(ev){
 
-                    scope.datetime = dateFilter(Date.parse(ev.date), attrs.format);
+                    //todo
+                    scope.datetime = dateFilter(Date.parse(ev.date), "yyyy-MM-dd HH:mm:ss");
+                    scope.$apply("datetime");
+                    console.log("???????????")
 
                 });
         }
 
         return {
-            //使用方法
             restrict: 'E',
             transclude: true,
-            template: '<input type="text" id="datetimepicker" class="form-control input-sm res-input-sm" style="width: inherit;height: inherit" ng-model="datetime">',
+            template: '<input type="text" id="datetimepicker" class="form-control input-sm res-input-sm" style="width: inherit;height: inherit" ng-model="datetime">' +
+            'zhlingshijian: {{datetime}}',
             link: link,
             scope: {
                 datetime: '=ngModel'
             }
         };
     }]);
-
-
-
-
-
-
-
 
 
 
