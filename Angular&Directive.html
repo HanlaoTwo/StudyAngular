@@ -37,7 +37,7 @@
     Date format: <input ng-model="format"><hr/>
     Current time is: <span my-current-time="format"></span><hr/>
 
-    <datapicker ng-model="times" format="yyyy-mm-dd hh:mm"></datapicker>
+    <datapicker ng-model="times" format="yyyy/MM/dd" language="Ch"  minView="month" style="width: 200px"></datapicker>
     <br>控制器时间:  {{times}}
 
 </div>
@@ -90,45 +90,56 @@
             console.log("===="+$scope.times);
         }
     }]);
-    app.directive('datapicker', ['$interval', 'dateFilter', function ($interval, dateFilter) {
-        function link(scope, element, attrs) {
-            function intMyselef() {
-                console.log(attrs.format);
+
+    /**
+     * 默认值：
+     * format：yyyy-MM-dd HH:mm:ss
+     * language:Ch(中文)
+     * weekStart:7（周日）
+     * minView:hour(小时)，应与format匹配
+     * clearBtn:false(无)
+     * todayBtn:true(有)
+     * autoclose：true(是)
+     */
+    app.directive('datapicker', ['dateFilter', function (dateFilter) {
+
+        function link(scope, attrs) {
+
                 $.fn.datetimepicker.dates['Ch'] = {
+
                     days: ["周日", "周一", "周二", "周三", "周四", "周五", "周六", "周日"],
                     daysShort: ["日", "一", "二", "三", "四", "五", "六", "日"],
                     daysMin: ["日", "一", "二", "三", "四", "五", "六", "日"],
-                    months: ["1月","2月","3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+                    months: ["01","02","03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
                     monthsShort: ["一","二","三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],
                     meridiem:    ['上午', '下午'],
                     clear: "清除",
                     today: "现在"
+
                 };
+
                 $('#datetimepicker').datetimepicker({
+
                     format: attrs.format,
-                    language: "Ch",
-                    weekStart: 1,
-                    language: "Ch",
-                    //minView: "month",
-                    todayBtn: true,
-                    clearBtn: true,
-                    autoclose: true
+                    weekStart: attrs.weekStart==undefined?"7":attrs.weekStart,
+                    language: attrs.language==undefined?"en":attrs.language,
+                    minView: attrs.minview==undefined?"hour":attrs.minview,
+                    todayBtn: attrs.todaybtn==undefined?true:attrs.todaybtn,
+                    clearBtn: attrs.clearbtn==undefined?false:attrs.clearbtn,
+                    autoclose: attrs.autoclose==undefined?true:attrs.autoclose,
+
                 }).on('changeDate', function(ev){
-                    scope.datetime = dateFilter(Date.parse(ev.date),'yyyy-MM-dd HH:mm');
-                    //scope.datetime = ev.date;
+
+                    scope.datetime = dateFilter(Date.parse(ev.date), attrs.format);
+
                 });
-            };
-            intMyselef();
-            scope.$watch('datetime', function (newval,oldval) {
-                console.log('==========='+newval)
-                //scope.datetime = newval;
-            });
         }
+
         return {
             //使用方法
             restrict: 'E',
             transclude: true,
-            template: '<input type="text" value="" id="datetimepicker" ng-model="datetime">指令时间:{{datetime}}',
+            template: '<input type="text" id="datetimepicker" class="form-control input-sm res-input-sm" style="width: inherit;height: inherit" ng-model="datetime">',
             link: link,
             scope: {
                 datetime: '=ngModel'
