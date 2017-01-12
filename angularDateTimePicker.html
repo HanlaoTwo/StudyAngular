@@ -14,7 +14,7 @@
 
 </head>
 
-<body>
+<body ng-app="myReverseFilterApp">
 
 <div ng-controller="DController">
 
@@ -38,10 +38,6 @@
 
     app.controller('DController', ['$scope', function ($scope) {
         $scope.times = '';//定义外边的时间
-        $scope.format = 'MM/dd/yyyy hh:mm:ss';
-        $scope.updateValue = function () {
-            console.log("====" + $scope.times);
-        }
     }]);
 
     /**
@@ -93,7 +89,7 @@
         return {
             restrict: 'E',
             transclude: true,
-            template: '<input type="text" id="datetimepicker" class="form-control input-sm res-input-sm" style="width: inherit;height: inherit" ng-model="datetime">,
+            template: '<input type="text" id="datetimepicker" class="form-control input-sm res-input-sm" style="width: inherit;height: inherit" ng-model="datetime">',
             link: link,
             scope: {
                 datetime: '=ngModel'
