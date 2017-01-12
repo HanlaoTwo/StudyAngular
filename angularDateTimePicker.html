@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Angualr控制器实现bootstrap中的时间选择器</title>
+
+    <!--需要引入的文件-->
+    <script src="https://cdn.static.runoob.com/libs/angular.js/1.4.6/angular.min.js"></script>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="bootstrap-datetimepicker.min.css">
+    <script src="bootstrap-datetimepicker.min.js"></script>
+
+</head>
+
+<body>
+
+<div ng-controller="DController">
+
+    <dateandtime ng-model="times"
+                 format="dat"
+                 language="Ch"
+                 todaybtn
+                 autoclose
+                 style="width: 200px">
+    </dateandtime>
+
+    <br>控制器时间: {{times}}
+
+</div>
+
+
+
+
+<script>
+    var app = angular.module('myReverseFilterApp', []);
+
+    app.controller('DController', ['$scope', function ($scope) {
+        $scope.times = '';//定义外边的时间
+        $scope.format = 'MM/dd/yyyy hh:mm:ss';
+        $scope.updateValue = function () {
+            console.log("====" + $scope.times);
+        }
+    }]);
+
+    /**
+     * 默认值
+     * format：date显示日期，不填或者其他显示日期和时间。属性必须有
+     * language:Ch(中文)
+     * weekStart:7（周日）
+     * minView:自动设置，与format匹配
+     *
+     * 以下属性有就会显示，否则不显示
+     * clearBtn
+     * todayBtn
+     * autoclose
+     */
+    app.directive('dateandtime', ['dateFilter', function (dateFilter) {
+
+        function link(scope, element, attrs) {
+
+            $.fn.datetimepicker.dates['Ch'] = {
+
+                days: ["周日", "周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+                daysShort: ["日", "一", "二", "三", "四", "五", "六", "日"],
+                daysMin: ["日", "一", "二", "三", "四", "五", "六", "日"],
+                months: ["01","02","03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
+                monthsShort: ["一","二","三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],
+                meridiem:    ['上午', '下午'],
+                clear: "清除",
+                today: "今天"
+            };
+
+            $('#datetimepicker').datetimepicker({
+
+                format: attrs.format=="date"?"yyyy-mm-dd":"yyyy-mm-dd hh:ii",
+                weekStart: attrs.weekStart==undefined?"7":attrs.weekStart,
+                language: attrs.language==undefined?"Ch":attrs.language,
+                minView: attrs.format=="date"?"month":"hour",
+                todayBtn: attrs.todaybtn==""?true:false,
+                clearBtn: attrs.clearbtn==""?true:false,
+                autoclose: attrs.autoclose==""?true:false,
+
+            }).on('changeDate', function(ev){
+
+                scope.datetime = dateFilter(Date.parse(ev.date), attrs.format=="date"?"yyyy-MM-dd":"yyyy-MM-dd HH:mm");
+                scope.$apply("datetime");
+
+            });
+        }
+
+        return {
+            restrict: 'E',
+            transclude: true,
+            template: '<input type="text" id="datetimepicker" class="form-control input-sm res-input-sm" style="width: inherit;height: inherit" ng-model="datetime">,
+            link: link,
+            scope: {
+                datetime: '=ngModel'
+            }
+        };
+    }]);
+
+</script>
+
+
+</body>
+</html>
+
+

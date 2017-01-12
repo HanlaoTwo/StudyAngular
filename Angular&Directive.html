@@ -39,11 +39,13 @@
     Current time is:<!-- <span my-current-time="format"></span>-->
     <hr/>
 
-    <datapicker ng-model="times"
-                format="yyyy-mm-dd hh:ii"
+    <dateandtime ng-model="times"
+                format="dat"
                 language="Ch"
+                todaybtn
+                autoclose
                 style="width: 200px">
-    </datapicker>
+    </dateandtime>
     <br>控制器时间: {{times}}
 
 </div>
@@ -90,7 +92,7 @@
 
 
     app.controller('DController', ['$scope', function ($scope) {
-        $scope.times = '2012-12-12 12:12:12';//定义外边的时间
+        $scope.times = '';//定义外边的时间
         $scope.format = 'MM/dd/yyyy hh:mm:ss';
         $scope.updateValue = function () {
             console.log("====" + $scope.times);
@@ -99,15 +101,17 @@
 
     /**
      * 默认值
-     * format：yyyy-MM-dd HH:mm:ss
+     * format：date显示日期，不填或者其他显示日期和时间。属性必须有
      * language:Ch(中文)
      * weekStart:7（周日）
-     * minView:hour(小时)，应与format匹配
-     * clearBtn:false(无)
-     * todayBtn:true(有)
-     * autoclose：true(是)
+     * minView:自动设置，与format匹配
+     *
+     * 以下属性有就会显示，否则不显示
+     * clearBtn
+     * todayBtn
+     * autoclose
      */
-    app.directive('datapicker', ['dateFilter', function (dateFilter) {
+    app.directive('dateandtime', ['dateFilter', function (dateFilter) {
 
         function link(scope, element, attrs) {
 
@@ -123,31 +127,28 @@
                     today: "今天"
                 };
 
-                $('#datetimepicker').datetimepicker({
+            $('#datetimepicker').datetimepicker({
 
-                    format: attrs.format,
-                    weekStart: attrs.weekStart==undefined?"7":attrs.weekStart,
-                    language: attrs.language==undefined?"Ch":attrs.language,
-                    minView: attrs.minview==undefined?"hour":attrs.minview,
-                    todayBtn: attrs.todaybtn==undefined?true:attrs.todaybtn,
-                    clearBtn: attrs.clearbtn==undefined?false:attrs.clearbtn,
-                    autoclose: attrs.autoclose==undefined?true:attrs.autoclose,
+                format: attrs.format=="date"?"yyyy-mm-dd":"yyyy-mm-dd hh:ii",
+                weekStart: attrs.weekStart==undefined?"7":attrs.weekStart,
+                language: attrs.language==undefined?"Ch":attrs.language,
+                minView: attrs.format=="date"?"month":"hour",
+                todayBtn: attrs.todaybtn==""?true:false,
+                clearBtn: attrs.clearbtn==""?true:false,
+                autoclose: attrs.autoclose==""?true:false,
 
-                }).on('changeDate', function(ev){
+            }).on('changeDate', function(ev){
 
-                    //todo
-                    scope.datetime = dateFilter(Date.parse(ev.date), "yyyy-MM-dd HH:mm:ss");
-                    scope.$apply("datetime");
-                    console.log("???????????")
+                scope.datetime = dateFilter(Date.parse(ev.date), attrs.format=="date"?"yyyy-MM-dd":"yyyy-MM-dd HH:mm");
+                scope.$apply("datetime");
 
-                });
+            });
         }
 
         return {
             restrict: 'E',
             transclude: true,
-            template: '<input type="text" id="datetimepicker" class="form-control input-sm res-input-sm" style="width: inherit;height: inherit" ng-model="datetime">' +
-            'zhlingshijian: {{datetime}}',
+            template: '<input type="text" id="datetimepicker" class="form-control input-sm res-input-sm" style="width: inherit;height: inherit" ng-model="datetime">,
             link: link,
             scope: {
                 datetime: '=ngModel'
