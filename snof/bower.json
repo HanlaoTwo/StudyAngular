@@ -1,0 +1,23 @@
+{
+  "name": "snof",
+  "description": "A test project for AngularJS",
+  "version": "0.0.0",
+  "homepage": "no homepage now",
+  "license": "no licensebow",
+  "private": true,
+  "dependencies": {
+    "requirejs": "^2.2.0",
+    "angular": "1.5.x",
+    "angular-mocks": "1.5.x",
+    "angular-route": "1.5.x",
+    "bootstrap": "3.3.x"
+  },
+  "main": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
